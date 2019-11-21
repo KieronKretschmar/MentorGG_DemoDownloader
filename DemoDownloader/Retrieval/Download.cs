@@ -55,6 +55,7 @@ namespace DemoDownloader.Retrieval
                 }
 
                 Console.WriteLine(
+                    $"Thread: {Thread.CurrentThread.ManagedThreadId} :: " +
                     $"Succesful download from `{url}`, " +
                     $"Time elaped: {Timer.Elapsed}");
 
