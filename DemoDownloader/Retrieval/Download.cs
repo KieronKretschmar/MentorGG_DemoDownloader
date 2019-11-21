@@ -32,7 +32,7 @@ namespace DemoDownloader.Retrieval
         /// </summary>
         /// <param name="url">Download Url</param>
         /// <param name="outputFilePath">Path where the successful file is output to</param>
-        /// <returns></returns>
+        /// <returns>Indication of the download success</returns>
         public static bool AttemptDownload(string url, out string outputFilePath)
         {
             string urlFileName = url.Split(UrlSeperators).Last();
