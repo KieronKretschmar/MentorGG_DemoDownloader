@@ -44,7 +44,7 @@ namespace DemoDownloader.Retrieval
                 $"Attempting to download `{urlFileName}` from `{url}`." +
                 $"Output File Path: `{outputFilePath}`");
 
-            DownloadClient client = new DownloadClient(TimeSpan.FromSeconds(30));
+            DownloadClient client = DownloadClient.FromTimespan(TimeSpan.FromSeconds(30));
 
             Timer.Start();
             try
@@ -77,23 +77,28 @@ namespace DemoDownloader.Retrieval
         /// <summary>
         /// HttpRequest timeout in milliseconds
         /// </summary>
-        private int Timeout { get; }
+        public int Timeout { get; private set; }
 
         /// <summary>
         /// Initialize a WebClient
         /// </summary>
         /// <param name="timeout">Timeout as a TimeSpan</param>
-        public DownloadClient(TimeSpan timeout) : base()
+        public static DownloadClient FromTimespan(TimeSpan timeout)
         {
-            this.Timeout = timeout.Milliseconds;
+            return new DownloadClient((int)timeout.TotalMilliseconds);
         }
 
         /// <summary>
         /// Initialize a WebClient
         /// </summary>
         /// <param name="timeout">Timeout in Milliseconds</param>
-        public DownloadClient(int timeout) : base()
+        public DownloadClient(int timeout)
         {
+            if (timeout <= 0)
+            {
+                throw new ArgumentOutOfRangeException(
+                    "timeout must be greater than 0 milliseconds");
+            }
             this.Timeout = timeout;
         }
 
