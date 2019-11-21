@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.Extensions.Configuration;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
@@ -9,21 +10,32 @@ using System.Threading;
 
 namespace DemoDownloader.Retrieval
 {
-    public static class Download
+    public interface IDownloader
+    {
+        /// <summary>
+        /// Attempt to download a file
+        /// </summary>
+        /// <param name="url">Download Url</param>
+        /// <param name="outputFilePath">Path where the successful file is output to</param>
+        /// <returns>Indication of the download success</returns>
+        bool AttemptDownload(string url, out string outputFilePath);
+    }
+
+    public class Download : IDownloader
     {
         static readonly Stopwatch Timer = new Stopwatch();
         static readonly char[] UrlSeperators = { '/', '\\' };
-
         static readonly string DefaultDemoDirectory = Path.GetFullPath("/Demos");
-        static readonly string DemoDirectory;
+
+        static string DemoDirectory;
 
         /// <summary>
-        /// Static constructor
+        /// Set the Demo Directory
         /// </summary>
-        static Download()
+        public Download(IConfiguration configuration)
         {
-            DemoDirectory = Environment.GetEnvironmentVariable(
-                "DEMO_DIRECTORY") ?? DefaultDemoDirectory;
+            string enviromentDemoDirectory = configuration.GetSection("DEMO_DIRECTORY").Value;
+            DemoDirectory = enviromentDemoDirectory ?? DefaultDemoDirectory;
             Directory.CreateDirectory(DemoDirectory);
         }
 
@@ -33,7 +45,7 @@ namespace DemoDownloader.Retrieval
         /// <param name="url">Download Url</param>
         /// <param name="outputFilePath">Path where the successful file is output to</param>
         /// <returns>Indication of the download success</returns>
-        public static bool AttemptDownload(string url, out string outputFilePath)
+        public bool AttemptDownload(string url, out string outputFilePath)
         {
             string urlFileName = url.Split(UrlSeperators).Last();
             string uniqueFileName = Guid.NewGuid().ToString() + Path.GetExtension(urlFileName);
