@@ -14,17 +14,17 @@ namespace DemoDownloader.Retrieval
         static readonly Stopwatch Timer = new Stopwatch();
         static readonly char[] UrlSeperators = { '/', '\\' };
 
-        static readonly string DefaultDownloadDirectory = Path.GetFullPath("/Users/Arran/Downloads/Demos");
-        static readonly string DownloadDirectory;
+        static readonly string DefaultDemoDirectory = Path.GetFullPath("/Demos");
+        static readonly string DemoDirectory;
 
         /// <summary>
         /// Static constructor
         /// </summary>
         static Download()
         {
-            DownloadDirectory = Environment.GetEnvironmentVariable(
-                "DOWNLOAD_DIRECTORY") ?? DefaultDownloadDirectory;
-            Directory.CreateDirectory(DownloadDirectory);
+            DemoDirectory = Environment.GetEnvironmentVariable(
+                "DEMO_DIRECTORY") ?? DefaultDemoDirectory;
+            Directory.CreateDirectory(DemoDirectory);
         }
 
         /// <summary>
@@ -37,7 +37,7 @@ namespace DemoDownloader.Retrieval
         {
             string urlFileName = url.Split(UrlSeperators).Last();
             string uniqueFileName = Guid.NewGuid().ToString() + Path.GetExtension(urlFileName);
-            outputFilePath = Path.Join(DownloadDirectory, uniqueFileName);
+            outputFilePath = Path.Join(DemoDirectory, uniqueFileName);
 
             Console.WriteLine(
                 $"Thread: {Thread.CurrentThread.ManagedThreadId} :: " +
