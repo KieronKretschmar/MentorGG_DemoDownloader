@@ -108,6 +108,7 @@ namespace DemoDownloader.Retrieval
             if (request != null)
             {
                 request.Timeout = Timeout;
+                ((HttpWebRequest)request).ReadWriteTimeout = Timeout;
             }
             return request;
         }
