@@ -21,7 +21,7 @@ namespace DemoDownloader.Retrieval
         bool AttemptDownload(string url, out string outputFilePath);
     }
 
-    public class Download : IDownloader
+    public class Downloader : IDownloader
     {
         static readonly Stopwatch Timer = new Stopwatch();
         static readonly char[] UrlSeperators = { '/', '\\' };
@@ -32,7 +32,7 @@ namespace DemoDownloader.Retrieval
         /// <summary>
         /// Set the Demo Directory
         /// </summary>
-        public Download(IConfiguration configuration)
+        public Downloader(IConfiguration configuration)
         {
             string enviromentDemoDirectory = configuration.GetSection("DEMO_DIRECTORY").Value;
             DemoDirectory = enviromentDemoDirectory ?? DefaultDemoDirectory;
