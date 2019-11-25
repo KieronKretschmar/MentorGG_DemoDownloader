@@ -20,7 +20,7 @@ namespace DemoDownloader
             Host.CreateDefaultBuilder(args)
                 .ConfigureServices((hostContext, services) =>
                 {
-                    services.AddTransient<IDownloader, Download>();
+                    services.AddTransient<IDownloader, Downloader>();
                     services.AddHostedService<Worker>();
                 });
     }
