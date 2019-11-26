@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using DemoDownloader.Retrieval;
+using DemoDownloader.Storage;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -20,7 +21,8 @@ namespace DemoDownloader
             Host.CreateDefaultBuilder(args)
                 .ConfigureServices((hostContext, services) =>
                 {
-                    services.AddTransient<IDownloader, Downloader>();
+                    services.AddTransient<IBlobStreamer, Streamer>();
+                    services.AddTransient<IBlobStorage, BlobStorage>();
                     services.AddHostedService<Worker>();
                 });
     }

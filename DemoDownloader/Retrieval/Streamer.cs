@@ -1,66 +1,60 @@
-﻿using Microsoft.Azure.Storage;
+﻿using DemoDownloader.Storage;
+using Microsoft.Azure.Storage;
 using Microsoft.Azure.Storage.Blob;
 using Microsoft.Azure.Storage.RetryPolicies;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
 
 namespace DemoDownloader.Retrieval
 {
-    interface IStreamer
+    public interface IBlobStreamer
     {
-        public bool AttemptStream();
+        Task StreamToBlobAsync(string fileUrl);
     }
 
-    class Streamer
+    class Streamer : IBlobStreamer
     {
-        CloudStorageAccount cloudStorageAccount;
-        CloudBlobClient cloudBlobClient;
+        CloudBlobContainer blobContainer;
+        HttpClient httpClient;
 
-        public Streamer()
+        public Streamer(IBlobStorage storage)
         {
-            cloudStorageAccount = CloudStorageAccount.Parse("UseDevelopmentStorage=true;");
-            cloudBlobClient = cloudStorageAccount.CreateCloudBlobClient();
+            blobContainer = storage.CloudBlobContainer;
+            httpClient = new HttpClient();
         }
 
-        public async Task AttemptStream()
+        public async Task StreamToBlobAsync(string fileUrl)
         {
-            var c_name = "test-" + Guid.NewGuid();
-            var container = cloudBlobClient.GetContainerReference(c_name);
+            string blob_id = Guid.NewGuid().ToString();
+            CloudBlockBlob blockBlob = blobContainer.GetBlockBlobReference(blob_id);
 
+            Console.WriteLine($"Downloading from {fileUrl} => {blobContainer.Name}.{blob_id}.");
+            Stream stream;
             try
             {
-                BlobRequestOptions requestOptions = new BlobRequestOptions() { RetryPolicy = new NoRetry() };
-                await container.CreateIfNotExistsAsync(requestOptions, null);
+                stream = await httpClient.GetStreamAsync(fileUrl);
             }
-            catch (StorageException)
+            catch (Exception e)
             {
-                Console.WriteLine(
-                    "If you are running with the default connection string, please make sure you have started the storage emulator");
-                Console.ReadLine();
-                throw;
+                throw e;
             }
 
-            string fileUrl = "https://demos-europe-west2.faceit-cdn.net/csgo/418fc933-9f72-418e-815f-566c86f125e0.dem.gz";
+            Console.WriteLine($"Retrieved {blob_id}.");
 
-            CloudBlockBlob blockBlob = container.GetBlockBlobReference("demo");
+            await blockBlob.UploadFromStreamAsync(source: stream);
 
-            DownloadClient client = DownloadClient.FromTimespan(TimeSpan.FromSeconds(30));
+            Console.WriteLine($"Uploaded {blob_id}.");
 
-            Stream stream;
-            using (client)
-            {
-                stream = client.OpenRead(new Uri(fileUrl));
-            }
-            await blockBlob.UploadFromStreamAsync(stream);
-
-            foreach (IListBlobItem blob in container.ListBlobs())
+            foreach (IListBlobItem blob in blobContainer.ListBlobs())
             {
                 Console.WriteLine("- {0} (type: {1})", blob.Uri, blob.GetType());
             }
-
         }
+
+
     }
 }
