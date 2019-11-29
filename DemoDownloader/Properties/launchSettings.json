@@ -3,7 +3,7 @@
     "DemoDownloader": {
       "commandName": "Project",
       "environmentVariables": {
-        "BLOB_CONTAINER_REF": "demo_location",
+        "BLOB_CONTAINER_REF": "demolocation",
         "DOTNET_ENVIRONMENT": "Development"
       }
     }
