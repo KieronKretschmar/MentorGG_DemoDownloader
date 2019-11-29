@@ -10,6 +10,9 @@ namespace DemoDownloader.Storage
 {
     public interface IBlobStorage
     {
+        /// <summary>
+        /// CloudBlobContainer storage object.
+        /// </summary>
         public CloudBlobContainer CloudBlobContainer { get; }
     }
 
@@ -20,6 +23,10 @@ namespace DemoDownloader.Storage
 
         public CloudBlobContainer CloudBlobContainer { get; private set; }
 
+        /// <summary>
+        /// Connects to blob storage and creates a blob container.
+        /// </summary>
+        /// <param name="configuration"></param>
         public BlobStorage(IConfiguration configuration)
         {
             string containerReference = configuration.GetSection(
@@ -34,6 +41,11 @@ namespace DemoDownloader.Storage
         }
 
 
+        /// <summary>
+        /// Returns a CloudBlobContainer, creating if it does not exist.
+        /// </summary>
+        /// <param name="containerReference">Reference name of the blob container</param>
+        /// <returns>CloudBlobContainer</returns>
         private CloudBlobContainer GetBlobContainer(string containerReference)
         {
             var container = cloudBlobClient.GetContainerReference(containerReference);

@@ -21,8 +21,8 @@ namespace DemoDownloader
             Host.CreateDefaultBuilder(args)
                 .ConfigureServices((hostContext, services) =>
                 {
-                    services.AddTransient<IBlobStreamer, Streamer>();
-                    services.AddTransient<IBlobStorage, BlobStorage>();
+                    services.AddSingleton<IBlobStreamer, Streamer>();
+                    services.AddSingleton<IBlobStorage, BlobStorage>();
                     services.AddHostedService<Worker>();
                 });
     }
