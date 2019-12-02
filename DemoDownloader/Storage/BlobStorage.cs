@@ -2,6 +2,7 @@
 using Microsoft.Azure.Storage.Blob;
 using Microsoft.Azure.Storage.RetryPolicies;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -18,6 +19,7 @@ namespace DemoDownloader.Storage
 
     class BlobStorage : IBlobStorage
     {
+        ILogger<BlobStorage> logger;
         CloudStorageAccount cloudStorageAccount;
         CloudBlobClient cloudBlobClient;
 
@@ -27,12 +29,14 @@ namespace DemoDownloader.Storage
         /// Connects to blob storage and creates a blob container.
         /// </summary>
         /// <param name="configuration"></param>
-        public BlobStorage(IConfiguration configuration)
+        public BlobStorage(IConfiguration configuration, ILogger<BlobStorage> logger)
         {
             string containerReference = configuration.GetSection(
                 "BLOB_CONTAINER_REF").Value ?? "demos";
             string connectionString = configuration.GetSection(
                 "BLOB_CONNECTION_STRING").Value ?? "UseDevelopmentStorage=true;";
+
+            this.logger = logger;
 
             cloudStorageAccount = CloudStorageAccount.Parse(connectionString);
             cloudBlobClient = cloudStorageAccount.CreateCloudBlobClient();
@@ -56,7 +60,7 @@ namespace DemoDownloader.Storage
             }
             catch (StorageException exception)
             {
-                Console.WriteLine(
+                logger.LogWarning(
                     "If you are running with the default connection string, please make sure you have started the storage emulator");
                 throw exception;
             }

@@ -7,6 +7,7 @@ using DemoDownloader.Storage;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
 
 namespace DemoDownloader
 {
@@ -24,6 +25,11 @@ namespace DemoDownloader
                     services.AddSingleton<IBlobStreamer, Streamer>();
                     services.AddSingleton<IBlobStorage, BlobStorage>();
                     services.AddHostedService<Worker>();
+
+                    services.AddLogging(o => {
+                        o.AddConsole();
+                        o.AddDebug();
+                    });
                 });
     }
 }

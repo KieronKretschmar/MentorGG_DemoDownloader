@@ -2,6 +2,7 @@
 using Microsoft.Azure.Storage;
 using Microsoft.Azure.Storage.Blob;
 using Microsoft.Azure.Storage.RetryPolicies;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -18,12 +19,14 @@ namespace DemoDownloader.Retrieval
 
     class Streamer : IBlobStreamer
     {
+        ILogger<Streamer> logger;
         CloudBlobContainer blobContainer;
         HttpClient httpClient;
 
-        public Streamer(IBlobStorage storage)
+        public Streamer(IBlobStorage storage, ILogger<Streamer> logger)
         {
             blobContainer = storage.CloudBlobContainer;
+            this.logger = logger;
             httpClient = new HttpClient();
         }
 
@@ -32,26 +35,47 @@ namespace DemoDownloader.Retrieval
             string blob_id = Guid.NewGuid().ToString();
             CloudBlockBlob blockBlob = blobContainer.GetBlockBlobReference(blob_id);
 
-            Console.WriteLine($"Downloading from {fileUrl} => {blobContainer.Name}.{blob_id}.");
-            Stream stream;
-            try
-            {
-                stream = await httpClient.GetStreamAsync(fileUrl);
-            }
-            catch (Exception e)
-            {
-                throw e;
-            }
+            logger.LogInformation($"Downloading from {fileUrl} => {blobContainer.Name}.{blob_id}.");
 
-            Console.WriteLine($"Retrieved {blob_id}.");
+            Stream stream = await httpClient.GetStreamAsync(fileUrl).ContinueWith(task =>
+            {
+                try
+                {
+                    if (task.IsCompletedSuccessfully)
+                    {
+                        return task.Result;
+                    }
+                    else
+                    {
+                        throw task.Exception;
+                    }
+                }
+                catch (AggregateException ex)
+                {
+                    logger.LogError(ex.GetBaseException(), "Caught AggregateException");
+                    throw ex;
+                }
+                catch (WebException ex)
+                {
+                    logger.LogError(ex, "Caught WebException");
+                    throw ex;
+                }
+                catch (Exception ex)
+                {
+                    logger.LogError(ex, "Unhandled Exception");
+                    throw ex;
+                }
+            });
+
+            logger.LogInformation($"Retrieved {blob_id}. {stream.Length}");
 
             await blockBlob.UploadFromStreamAsync(source: stream);
 
-            Console.WriteLine($"Uploaded {blob_id}.");
+            logger.LogInformation($"Uploaded {blob_id}.");
 
             foreach (IListBlobItem blob in blobContainer.ListBlobs())
             {
-                Console.WriteLine("- {0} (type: {1})", blob.Uri, blob.GetType());
+                logger.LogInformation("- {0} (type: {1})", blob.Uri, blob.GetType());
             }
         }
 
