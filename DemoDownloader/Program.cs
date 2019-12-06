@@ -9,6 +9,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 
+
 namespace DemoDownloader
 {
     public class Program
@@ -22,11 +23,12 @@ namespace DemoDownloader
             Host.CreateDefaultBuilder(args)
                 .ConfigureServices((hostContext, services) =>
                 {
-                    services.AddSingleton<IBlobStreamer, Streamer>();
-                    services.AddSingleton<IBlobStorage, BlobStorage>();
+                    services.AddSingleton<BlobStreamer>();
+                    services.AddSingleton<BlobStorage>();
                     services.AddHostedService<Worker>();
 
-                    services.AddLogging(o => {
+                    services.AddLogging(o =>
+                    {
                         o.AddConsole();
                         o.AddDebug();
                     });

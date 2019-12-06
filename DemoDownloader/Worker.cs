@@ -14,9 +14,9 @@ namespace DemoDownloader
     {
 
         private readonly ILogger<Worker> logger;
-        private readonly IBlobStreamer blobStreamer;
+        private readonly BlobStreamer blobStreamer;
 
-        public Worker(ILogger<Worker> logger, IBlobStreamer blobStreamer)
+        public Worker(ILogger<Worker> logger, BlobStreamer blobStreamer)
         {
             this.logger = logger;
             this.blobStreamer = blobStreamer;
@@ -35,7 +35,19 @@ namespace DemoDownloader
                     "https://demos-europe-west2.faceit-cdn.net/csgo/2af4b0e3-084e-4dd9-90e0-72b4f342ccbb.dem.gz",
                     "https://demos-europe-west2.faceit-cdn.net/csgo/418fc933-9f72-418e-815f-566c86f125e0.dem.gz",
                 };
-                await blobStreamer.StreamToBlobAsync(valid_test_urls[1]);
+
+                for (int i = 0; i < valid_test_urls.Length; i++)
+                {
+                    try
+                    {
+                        await blobStreamer.StreamToBlobAsync(valid_test_urls[i]);
+                    }
+                    catch (Exception e)
+                    {
+                        continue;
+                    }
+                }
+
                 await Task.Delay(100000, stoppingToken);
             }
         }

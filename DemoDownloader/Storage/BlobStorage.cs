@@ -9,15 +9,7 @@ using System.Text;
 
 namespace DemoDownloader.Storage
 {
-    public interface IBlobStorage
-    {
-        /// <summary>
-        /// CloudBlobContainer storage object.
-        /// </summary>
-        public CloudBlobContainer CloudBlobContainer { get; }
-    }
-
-    class BlobStorage : IBlobStorage
+    public class BlobStorage
     {
         ILogger<BlobStorage> logger;
         CloudStorageAccount cloudStorageAccount;
@@ -61,7 +53,8 @@ namespace DemoDownloader.Storage
             catch (StorageException exception)
             {
                 logger.LogWarning(
-                    "If you are running with the default connection string, please make sure you have started the storage emulator");
+                    "If you are running with the default connection string," +
+                    " please make sure you have started the storage emulator");
                 throw exception;
             }
 
