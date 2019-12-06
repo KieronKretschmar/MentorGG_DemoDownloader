@@ -16,4 +16,8 @@ Download CS:GO Demos and store them on network file storage.
 
 ## Enviroment Variables
 
-- `DEMO_DIRECTORY` : Internal location where to store the Demo files, once downloaded.
+- `BLOB_CONTAINER_REF` : Azure Blob Storage container reference (Default: `demos` )
+- `BLOB_CONNECTION_STRING` : Azure Blob Storage connection string [*]
+
+[*] *Required*
+
