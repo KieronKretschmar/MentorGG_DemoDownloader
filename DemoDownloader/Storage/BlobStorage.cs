@@ -11,7 +11,8 @@ namespace DemoDownloader.Storage
 {
     public class BlobStorage
     {
-        ILogger<BlobStorage> logger;
+        private readonly ILogger<BlobStorage> _logger;
+
         CloudStorageAccount cloudStorageAccount;
         CloudBlobClient cloudBlobClient;
 
@@ -28,7 +29,7 @@ namespace DemoDownloader.Storage
             string connectionString = configuration.GetSection(
                 "BLOB_CONNECTION_STRING").Value ?? "UseDevelopmentStorage=true;";
 
-            this.logger = logger;
+            _logger = logger;
 
             cloudStorageAccount = CloudStorageAccount.Parse(connectionString);
             cloudBlobClient = cloudStorageAccount.CreateCloudBlobClient();
@@ -52,7 +53,7 @@ namespace DemoDownloader.Storage
             }
             catch (StorageException exception)
             {
-                logger.LogWarning(
+                _logger.LogWarning(
                     "If you are running with the default connection string," +
                     " please make sure you have started the storage emulator");
                 throw exception;

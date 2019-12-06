@@ -15,23 +15,24 @@ namespace DemoDownloader.Retrieval
 {
     public class BlobStreamer
     {
-        ILogger<BlobStreamer> logger;
+        private readonly ILogger<BlobStreamer> _logger;
+        private readonly BlobStorage _blobStorage;
         CloudBlobContainer blobContainer;
         HttpClient httpClient;
 
-        public BlobStreamer(ILogger<BlobStreamer> logger, BlobStorage storage)
+        public BlobStreamer(ILogger<BlobStreamer> logger, BlobStorage blobStorage)
         {
-            this.logger = logger;
-            blobContainer = storage.CloudBlobContainer;
+            _logger = logger;
+            _blobStorage = blobStorage;
             httpClient = new HttpClient();
         }
 
         public async Task StreamToBlobAsync(string fileUrl)
         {
             string blob_id = Guid.NewGuid().ToString();
-            CloudBlockBlob blockBlob = blobContainer.GetBlockBlobReference(blob_id);
+            CloudBlockBlob blockBlob = _blobStorage.CloudBlobContainer.GetBlockBlobReference(blob_id);
 
-            logger.LogInformation($"Attempting download from {fileUrl}.");
+            _logger.LogInformation($"Attempting download from {fileUrl}.");
 
             var response = await httpClient.GetAsync(
                 fileUrl, HttpCompletionOption.ResponseHeadersRead);
@@ -42,22 +43,22 @@ namespace DemoDownloader.Retrieval
                 {
                     await blockBlob.UploadFromStreamAsync(source: stream);
                 }
-                logger.LogInformation($"\nRetrieved and Uploaded {blob_id}");
+                _logger.LogInformation($"\nRetrieved and Uploaded {blob_id}");
             }
             else
             {
                 var msg = $"{fileUrl} Download failed with {response.StatusCode}";
-                logger.LogError(msg);
+                _logger.LogError(msg);
                 throw new Exception(msg);
             }
 
             var blobList = new List<string>();
-            foreach (IListBlobItem blob in blobContainer.ListBlobs())
+            foreach (IListBlobItem blob in _blobStorage.CloudBlobContainer.ListBlobs())
             {
                 blobList.Add($"{blob.Uri} (type: {blob.GetType()}");
             }
 
-            logger.LogInformation(string.Join("\n -", blobList));
+            _logger.LogInformation(string.Join("\n -", blobList));
         }
 
 

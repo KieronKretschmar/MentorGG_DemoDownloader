@@ -13,20 +13,20 @@ namespace DemoDownloader
     public class Worker : BackgroundService
     {
 
-        private readonly ILogger<Worker> logger;
-        private readonly BlobStreamer blobStreamer;
+        private readonly ILogger<Worker> _logger;
+        private readonly BlobStreamer _blobStreamer;
 
         public Worker(ILogger<Worker> logger, BlobStreamer blobStreamer)
         {
-            this.logger = logger;
-            this.blobStreamer = blobStreamer;
+            _logger = logger;
+            _blobStreamer = blobStreamer;
         }
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
             while (!stoppingToken.IsCancellationRequested)
             {
-                logger.LogInformation("Worker running at: {time}", DateTimeOffset.Now);
+                _logger.LogInformation("Worker running at: {time}", DateTimeOffset.Now);
                 string[] valid_test_urls = {
                     "http://replay191.valve.net/730/003380559004810871024_1371365513.dem.bz2",
                     "https://demos-asia-southeast1.faceit-cdn.net/csgo/76d083e1-9808-48e4-aaf0-9d1d49343b28.dem.gz",
@@ -40,7 +40,7 @@ namespace DemoDownloader
                 {
                     try
                     {
-                        await blobStreamer.StreamToBlobAsync(valid_test_urls[i]);
+                        await _blobStreamer.StreamToBlobAsync(valid_test_urls[i]);
                     }
                     catch (Exception e)
                     {
