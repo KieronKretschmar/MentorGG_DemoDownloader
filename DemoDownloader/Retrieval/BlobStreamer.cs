@@ -17,7 +17,6 @@ namespace DemoDownloader.Retrieval
     {
         private readonly ILogger<BlobStreamer> _logger;
         private readonly BlobStorage _blobStorage;
-        CloudBlobContainer blobContainer;
         HttpClient httpClient;
 
         public BlobStreamer(ILogger<BlobStreamer> logger, BlobStorage blobStorage)
@@ -27,12 +26,12 @@ namespace DemoDownloader.Retrieval
             httpClient = new HttpClient();
         }
 
-        public async Task StreamToBlobAsync(string fileUrl)
+        public async Task<string> StreamToBlobAsync(string fileUrl)
         {
             string blob_id = Guid.NewGuid().ToString();
             CloudBlockBlob blockBlob = _blobStorage.CloudBlobContainer.GetBlockBlobReference(blob_id);
 
-            _logger.LogInformation($"Attempting download from {fileUrl}.");
+            _logger.LogInformation($"Attempting download from [ {fileUrl} ]");
 
             var response = await httpClient.GetAsync(
                 fileUrl, HttpCompletionOption.ResponseHeadersRead);
@@ -43,22 +42,15 @@ namespace DemoDownloader.Retrieval
                 {
                     await blockBlob.UploadFromStreamAsync(source: stream);
                 }
-                _logger.LogInformation($"Retrieved and Uploaded {blob_id}");
+                _logger.LogInformation($"Retrieved and Uploaded [ {blob_id} ]");
             }
             else
             {
-                var msg = $"{fileUrl} Download failed with {response.StatusCode}";
-                _logger.LogError(msg);
-                throw new Exception(msg);
+                _logger.LogError($"{fileUrl} Download failed with: [ {response.StatusCode}: {(int)response.StatusCode} ]");
+                response.EnsureSuccessStatusCode();
             }
 
-            var blobList = new List<string>();
-            foreach (IListBlobItem blob in _blobStorage.CloudBlobContainer.ListBlobs())
-            {
-                blobList.Add($"{blob.Uri} (type: {blob.GetType()}");
-            }
-
-            _logger.LogInformation(string.Join("\n -", blobList));
+            return blockBlob.Uri.ToString();
         }
 
 

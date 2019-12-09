@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using DemoDownloader.Retrieval;
+using DemoDownloader.RPC;
 using DemoDownloader.Storage;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -25,7 +26,8 @@ namespace DemoDownloader
                 {
                     services.AddSingleton<BlobStreamer>();
                     services.AddSingleton<BlobStorage>();
-                    services.AddHostedService<Worker>();
+
+                    services.AddHostedService<DemoDownloaderRPCServer>();
 
                     services.AddLogging(o =>
                     {
