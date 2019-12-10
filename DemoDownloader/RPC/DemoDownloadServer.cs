@@ -1,52 +1,38 @@
 ﻿using System;
 using Newtonsoft.Json;
-using System.Collections.Generic;
-using System.Text;
-using RabbitMQ.Client.Events;
 using RabbitMQ.Client;
 using RabbitTransfer;
 using DemoDownloader.Retrieval;
-using Microsoft.Extensions.Hosting;
-using System.Threading;
-using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
-using System.Net.Http;
+using RabbitMQ.Abstract;
 
 namespace DemoDownloader.RPC
 {
-    public class DemoDownloaderRPCServer : AbstractRPCServer, IHostedService
+    public class DemoDownloadServer : RPCServerService
     {
-        private readonly ILogger<DemoDownloaderRPCServer> _logger;
+        private readonly ILogger<DemoDownloadServer> _logger;
         private readonly BlobStreamer _blobStreamer;
 
-        public override string QUEUE_NAME => RPCExchange.DC_DD.QUEUE;
+        public override string QueueName => RPCExchange.DC_DD.QUEUE;
 
-        public DemoDownloaderRPCServer(
-            ILogger<DemoDownloaderRPCServer> logger,
-            BlobStreamer blobStreamer) : base()
+        /// <summary>
+        /// Attach a Logger and Blob Streamer
+        /// </summary>
+        /// <param name="logger"></param>
+        /// <param name="blobStreamer"></param>
+        public DemoDownloadServer(
+            ILogger<DemoDownloadServer> logger,
+            BlobStreamer blobStreamer,
+            IConnection connection) : base(connection)
         {
             this._logger = logger;
             this._blobStreamer = blobStreamer;
         }
 
-        public Task StartAsync(CancellationToken cancellationToken)
-        {
-            _logger.LogInformation("Rpc Server: Started");
-
-            return Task.CompletedTask;
-        }
-
-        public Task StopAsync(CancellationToken cancellationToken)
-        {
-            _logger.LogInformation("Rpc Server: Stopped");
-
-            return Task.CompletedTask;
-        }
-
         /// <summary>
         /// Attempt to retreive and stream a Download Path to Blob Storage.
         /// </summary>
-        protected override string OnMessageReceived(long matchId, string response)
+        protected override string HandleMessageRecieved(long matchId, string response)
         {
             var message_model = JsonConvert.DeserializeObject<DC_DD_Model>(response);
 

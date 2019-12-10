@@ -7,9 +7,11 @@ using DemoDownloader.RPC;
 using DemoDownloader.Storage;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
-
+using RabbitMQ.Client;
+using RabbitTransfer;
 
 namespace DemoDownloader
 {
@@ -27,7 +29,10 @@ namespace DemoDownloader
                     services.AddSingleton<BlobStreamer>();
                     services.AddSingleton<BlobStorage>();
 
-                    services.AddHostedService<DemoDownloaderRPCServer>();
+                    // Add the Rabbit Connection
+                    services.AddSingleton(CreateRabbitConnection(hostContext.Configuration));
+                    // Add The Rabbit RPC Server
+                    services.AddHostedService<DemoDownloadServer>();
 
                     services.AddLogging(o =>
                     {
@@ -35,5 +40,25 @@ namespace DemoDownloader
                         o.AddDebug();
                     });
                 });
+
+        public static IConnection CreateRabbitConnection(IConfiguration configuration)
+        {
+            try
+            {
+                var factory = new ConnectionFactory
+                {
+                    HostName = configuration.GetValue<string>("AMQP_HOST"),
+                    UserName = configuration.GetValue<string>("AMQP_USER"),
+                    VirtualHost = configuration.GetValue<string>("AMQP_VHOST"),
+                    Password = configuration.GetValue<string>("AMQP_PASSWORD")
+                };
+                return factory.CreateConnection();
+            }
+            catch (Exception e)
+            {
+                throw new Exception("Failed to create AMQP Connection, Please check " +
+                    "the enviroment variables are set correctly", e);
+            }
+        }
     }
 }
