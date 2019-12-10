@@ -3,8 +3,12 @@
     "DemoDownloader": {
       "commandName": "Project",
       "environmentVariables": {
+        "AMQP_VHOST": "zjwbyctn",
         "BLOB_CONTAINER_REF": "demolocation",
-        "DOTNET_ENVIRONMENT": "Development"
+        "AMQP_PASSWORD": "9eKT0Ejw5uEJ3sDNxJYkJn_QehYl6UxH",
+        "AMQP_USER": "zjwbyctn",
+        "DOTNET_ENVIRONMENT": "Development",
+        "AMQP_HOST": "dove.rmq.cloudamqp.com"
       }
     }
   }
