@@ -1,19 +1,17 @@
 ﻿using System;
 using Newtonsoft.Json;
 using RabbitMQ.Client;
-using RabbitTransfer;
 using DemoDownloader.Retrieval;
 using Microsoft.Extensions.Logging;
-using RabbitMQ.Abstract;
+using RabbitTransfer.Interfaces;
+using RabbitTransfer.Consumer;
 
 namespace DemoDownloader.RPC
 {
-    public class DemoDownloadServer : RPCServerService
+    public class DemoDownloadServer : RPCConsumer
     {
         private readonly ILogger<DemoDownloadServer> _logger;
         private readonly BlobStreamer _blobStreamer;
-
-        public override string QueueName => RPCExchange.DC_DD.QUEUE;
 
         /// <summary>
         /// Attach a Logger and Blob Streamer
@@ -23,18 +21,19 @@ namespace DemoDownloader.RPC
         public DemoDownloadServer(
             ILogger<DemoDownloadServer> logger,
             BlobStreamer blobStreamer,
-            IConnection connection) : base(connection)
+            DownloadQueueConnection queueConnection) : base(queueConnection)
         {
-            this._logger = logger;
-            this._blobStreamer = blobStreamer;
+            _logger = logger;
+            _blobStreamer = blobStreamer;
         }
 
         /// <summary>
         /// Attempt to retreive and stream a Download Path to Blob Storage.
         /// </summary>
-        protected override string HandleMessageRecieved(long matchId, string response)
+        protected override string HandleMessageAndReply(IBasicProperties properties, string message)
         {
-            var message_model = JsonConvert.DeserializeObject<DC_DD_Model>(response);
+            var matchId = long.Parse(properties.CorrelationId);
+            var message_model = JsonConvert.DeserializeObject<DC_DD_Model>(message);
 
             _logger.LogInformation(
                 $"Match {matchId}: Received DownloadPath: [ {message_model.DownloadPath} ]");
@@ -57,10 +56,10 @@ namespace DemoDownloader.RPC
                 model.Success = false;
             }
 
-            string model_json = JsonConvert.SerializeObject(model);
-            _logger.LogInformation(model_json);
+            var replyMessage = JsonConvert.SerializeObject(model);
+            _logger.LogInformation(replyMessage);
 
-            return model_json;
+            return replyMessage;
         }
     }
 }

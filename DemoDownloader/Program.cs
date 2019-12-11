@@ -12,6 +12,7 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using RabbitMQ.Client;
 using RabbitTransfer;
+using RabbitTransfer.Interfaces;
 
 namespace DemoDownloader
 {
@@ -29,8 +30,13 @@ namespace DemoDownloader
                     services.AddSingleton<BlobStreamer>();
                     services.AddSingleton<BlobStorage>();
 
-                    // Add the Rabbit Connection
-                    services.AddSingleton(CreateRabbitConnection(hostContext.Configuration));
+                    // Add the Rabbit Connection Factory
+                    // A new instance will be created for each use of `IQueueConnection`
+                    services.AddTransient<IQueueConnection>(
+                        serviceProvider => { return new DownloadQueueConnection(hostContext.Configuration); }
+                    );
+
+
                     // Add The Rabbit RPC Server
                     services.AddHostedService<DemoDownloadServer>();
 
@@ -41,24 +47,5 @@ namespace DemoDownloader
                     });
                 });
 
-        public static IConnection CreateRabbitConnection(IConfiguration configuration)
-        {
-            try
-            {
-                var factory = new ConnectionFactory
-                {
-                    HostName = configuration.GetValue<string>("AMQP_HOST"),
-                    UserName = configuration.GetValue<string>("AMQP_USER"),
-                    VirtualHost = configuration.GetValue<string>("AMQP_VHOST"),
-                    Password = configuration.GetValue<string>("AMQP_PASSWORD")
-                };
-                return factory.CreateConnection();
-            }
-            catch (Exception e)
-            {
-                throw new Exception("Failed to create AMQP Connection, Please check " +
-                    "the enviroment variables are set correctly", e);
-            }
-        }
     }
 }
