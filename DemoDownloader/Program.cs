@@ -32,7 +32,7 @@ namespace DemoDownloader
 
                     // Add the Rabbit Connection Factory
                     // A new instance will be created for each use of `IQueueConnection`
-                    services.AddTransient<IQueueConnection>(
+                    services.AddTransient(
                         serviceProvider => { return new DownloadQueueConnection(hostContext.Configuration); }
                     );
 
