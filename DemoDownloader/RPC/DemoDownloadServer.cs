@@ -8,7 +8,7 @@ using RabbitTransfer.Consumer;
 
 namespace DemoDownloader.RPC
 {
-    public class DemoDownloadServer : RPCConsumer
+    public class DemoDownloadServer : RPCConsumer<DC_DD_Model, DD_DC_Model>
     {
         private readonly ILogger<DemoDownloadServer> _logger;
         private readonly BlobStreamer _blobStreamer;
@@ -30,36 +30,29 @@ namespace DemoDownloader.RPC
         /// <summary>
         /// Attempt to retreive and stream a Download Path to Blob Storage.
         /// </summary>
-        protected override string HandleMessageAndReply(IBasicProperties properties, string message)
+        protected override DD_DC_Model HandleMessageAndReply(IBasicProperties properties, DC_DD_Model consumeModel)
         {
             var matchId = long.Parse(properties.CorrelationId);
-            var message_model = JsonConvert.DeserializeObject<DC_DD_Model>(message);
 
             _logger.LogInformation(
-                $"Match {matchId}: Received DownloadPath: [ {message_model.DownloadPath} ]");
+                $"Match {matchId}: Received Download Url: [ {consumeModel.DownloadUrl} ]");
 
-            var model = new DD_DC_Model
-            {
-                matchId = matchId,
-            };
+            var produceModel = new DD_DC_Model();
 
             try
             {
-                model.zippedFilePath = _blobStreamer.StreamToBlobAsync(
-                    message_model.DownloadPath).GetAwaiter().GetResult();
+                produceModel.DemoUrl = _blobStreamer.StreamToBlobAsync(
+                    consumeModel.DownloadUrl).GetAwaiter().GetResult();
 
-                model.Success = true;
+                produceModel.Success = true;
             }
             catch (Exception e){
                 _logger.LogError($"Match {matchId}: Streaming failed with: {e.Message}");
 
-                model.Success = false;
+                produceModel.Success = false;
             }
 
-            var replyMessage = JsonConvert.SerializeObject(model);
-            _logger.LogInformation(replyMessage);
-
-            return replyMessage;
+            return produceModel;
         }
     }
 }
