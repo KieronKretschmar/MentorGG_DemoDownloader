@@ -5,6 +5,7 @@ using DemoDownloader.Retrieval;
 using Microsoft.Extensions.Logging;
 using RabbitTransfer.Interfaces;
 using RabbitTransfer.Consumer;
+using System.Net.Http;
 
 namespace DemoDownloader.RPC
 {
@@ -46,9 +47,13 @@ namespace DemoDownloader.RPC
 
                 produceModel.Success = true;
             }
-            catch (Exception e){
-                _logger.LogError($"Match {matchId}: Streaming failed with: {e.Message}");
-
+            catch (HttpRequestException e){
+                _logger.LogError($"Match {matchId}: HttpRequestException: {e.Message}");
+                produceModel.Success = false;
+            }
+            catch (Exception e)
+            {
+                _logger.LogError($"Match {matchId}: Unknown Exception: {e.Message}");
                 produceModel.Success = false;
             }
 

@@ -46,8 +46,9 @@ namespace DemoDownloader.Retrieval
             }
             else
             {
-                _logger.LogError($"{fileUrl} Download failed with: [ {response.StatusCode}: {(int)response.StatusCode} ]");
-                response.EnsureSuccessStatusCode();
+                var msg = $"{fileUrl} Download failed with: [ {response.StatusCode}: {(int)response.StatusCode} ]";
+                _logger.LogError(msg);
+                throw new HttpRequestException(msg);
             }
 
             return blockBlob.Uri.ToString();
