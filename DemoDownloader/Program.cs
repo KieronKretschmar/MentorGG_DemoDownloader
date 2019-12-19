@@ -28,18 +28,9 @@ namespace DemoDownloader
                     services.AddSingleton<BlobStorage>();
 
                     // Add The Rabbit RPC Server
-                    services.AddHostedService(
-                        sp =>
+                    services.AddHostedService(sp =>
                         {
-                            return new UrlConsumer(
-                                logger: sp.GetRequiredService<ILogger<UrlConsumer>>(),
-                                blobStreamer: sp.GetRequiredService<BlobStreamer>(),
-                                queueConnections: new RPCQueueConnections(
-                                    hostContext.Configuration.GetValue<string>("AMQP_URI"),
-                                    hostContext.Configuration.GetValue<string>("AMQP_DOWNLOAD_URL_QUEUE"),
-                                    hostContext.Configuration.GetValue<string>("AMQP_DEMO_URL_QUEUE")
-                                    )
-                                );
+                            return UrlConsumerFactory(sp, hostContext.Configuration);
                         }
                     );
 
@@ -49,6 +40,23 @@ namespace DemoDownloader
                         o.AddDebug();
                     });
                 });
+
+        /// <summary>
+        /// Return a UrlConsumer.
+        /// </summary>
+        private static UrlConsumer UrlConsumerFactory(IServiceProvider sp, IConfiguration config)
+        {
+            var connections = new RPCQueueConnections(
+                    config.GetValue<string>("AMQP_URI"),
+                    config.GetValue<string>("AMQP_DOWNLOAD_URL_QUEUE"),
+                    config.GetValue<string>("AMQP_DEMO_URL_QUEUE")
+            );
+
+            return new UrlConsumer(
+                logger: sp.GetRequiredService<ILogger<UrlConsumer>>(),
+                blobStreamer: sp.GetRequiredService<BlobStreamer>(),
+                queueConnections: connections);
+        }
 
     }
 }
