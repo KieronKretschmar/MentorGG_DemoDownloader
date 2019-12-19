@@ -7,12 +7,9 @@ using DemoDownloader.RPC;
 using DemoDownloader.Storage;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
-using RabbitMQ.Client;
-using RabbitTransfer;
-using RabbitTransfer.Interfaces;
+using RabbitTransfer.Queues;
 
 namespace DemoDownloader
 {
@@ -30,15 +27,21 @@ namespace DemoDownloader
                     services.AddSingleton<BlobStreamer>();
                     services.AddSingleton<BlobStorage>();
 
-                    // Add the Rabbit Connection Factory
-                    // A new instance will be created for each use of `IQueueConnection`
-                    services.AddTransient(
-                        serviceProvider => { return new DownloadQueueConnection(hostContext.Configuration); }
-                    );
-
-
                     // Add The Rabbit RPC Server
-                    services.AddHostedService<DemoDownloadServer>();
+                    services.AddHostedService(
+                        sp =>
+                        {
+                            return new UrlConsumer(
+                                logger: sp.GetRequiredService<ILogger<UrlConsumer>>(),
+                                blobStreamer: sp.GetRequiredService<BlobStreamer>(),
+                                queueConnections: new RPCQueueConnections(
+                                    hostContext.Configuration.GetValue<string>("AMQP_URI"),
+                                    hostContext.Configuration.GetValue<string>("AMQP_DOWNLOAD_URL_QUEUE"),
+                                    hostContext.Configuration.GetValue<string>("AMQP_DEMO_URL_QUEUE")
+                                    )
+                                );
+                        }
+                    );
 
                     services.AddLogging(o =>
                     {
