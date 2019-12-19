@@ -1,6 +1,12 @@
 # DemoDownloader
 
-Download CS:GO Demos and store them on network file storage.
+Download CS:GO Demos and store them on network file storage. (Azure Blob Storage)
+
+## Single Download Operation
+
+1. A **DownloadUrl** message is consumed from `AMPQ_DOWNLOAD_URL_QUEUE`.
+2. The Demo is downloaded and stored an a Blob Container `BLOB_CONTAINER_REF`.
+3. A **DemoUrl** message s produced and sent to `AMQP_DEMO_URL_QUEUE`.
 
 ## Building
 
