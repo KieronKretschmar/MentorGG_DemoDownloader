@@ -23,10 +23,9 @@ Download CS:GO Demos and store them on network file storage. (Azure Blob Storage
 ## Enviroment Variables
 
 **RabbitMQ**
-- `AMQP_HOST` : RabbitMQ Instance Hostname [\*]
-- `AMQP_USER` : RabbitMQ Instance Username [\*]
-- `AMQP_VHOST` : RabbitMQ Instance Virtual Host [\*]
-- `AMQP_PASSWORD` : RabbitMQ Instance Password [\*]
+- `AMQP_URI` : RabbitMQ Instance URI [\*]
+- `AMQP_DOWNLOAD_URL_QUEUE` : Queue to consume Download Urls from. [\*]
+- `AMQP_DEMO_URL_QUEUE` : Queue to publish Demo Urls to. [\*]
 
 **Blob Storage**
 - `BLOB_CONTAINER_REF` : Azure Blob Storage container reference (Default: `demos` )
