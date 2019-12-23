@@ -1,0 +1,17 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.Worker">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp3.0</TargetFramework>
+    <UserSecretsId>dotnet-DemoDownloader-5D922851-2C7A-4F11-9B14-8CCD54CFB300</UserSecretsId>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Azure.Storage.Blob" Version="11.1.1" />
+    <PackageReference Include="Microsoft.Extensions.Hosting" Version="3.0.1" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Console" Version="3.0.1" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\RabbitMqLib\RabbitTransfer.csproj" />
+  </ItemGroup>
+</Project>
