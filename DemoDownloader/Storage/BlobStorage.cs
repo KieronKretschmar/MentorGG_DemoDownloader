@@ -49,7 +49,7 @@ namespace DemoDownloader.Storage
             try
             {
                 BlobRequestOptions requestOptions = new BlobRequestOptions() { RetryPolicy = new NoRetry() };
-                container.CreateIfNotExists(requestOptions, null);
+                container.CreateIfNotExists(BlobContainerPublicAccessType.Blob,requestOptions, null);
             }
             catch (StorageException exception)
             {
