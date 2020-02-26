@@ -1,4 +1,0 @@
-[submodule "RabbitMqLib"]
-	path = RabbitMqLib
-	url = git@gitlab.com:mentorgg/engine/RabbitCommunicationLib.git 
-	branch = release-0.3.0
