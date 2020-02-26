@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk.Worker">
 
   <PropertyGroup>
-    <TargetFramework>netcoreapp3.0</TargetFramework>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
     <UserSecretsId>dotnet-DemoDownloader-5D922851-2C7A-4F11-9B14-8CCD54CFB300</UserSecretsId>
   </PropertyGroup>
 
