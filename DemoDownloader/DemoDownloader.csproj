@@ -12,6 +12,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\RabbitMqLib\RabbitTransfer.csproj" />
+    <ProjectReference Include="..\RabbitCommunicationLib\RabbitCommunicationLib.csproj" />
   </ItemGroup>
 </Project>
