@@ -1,19 +1,34 @@
-FROM mcr.microsoft.com/dotnet/core/sdk:3.0 AS build
+# ===============
+# BUILD IMAGE
+# ===============
+FROM mcr.microsoft.com/dotnet/core/sdk:3.1 AS build
 WORKDIR /app
 
+# Set the project name
+ENV PROJ "DemoDownloader"
+
 # Copy csproj and restore as distinct layers
-COPY ./DemoDownloader/*.csproj ./
+WORKDIR /app/RabbitCommunicationLib
+COPY ./RabbitCommunicationLib/*.csproj ./
+RUN dotnet restore
+
+
+WORKDIR /app/$PROJ
+COPY ./$PROJ/*.csproj ./
 RUN dotnet restore
 
 # Copy everything else and build
-COPY ./DemoDownloader/ ./
-RUN dotnet publish -c Release -o out
-
-# Build runtime image
-FROM mcr.microsoft.com/dotnet/core/aspnet:3.0 AS runtime
 WORKDIR /app
+COPY ./RabbitCommunicationLib ./RabbitCommunicationLib
+COPY ./$PROJ/ ./$PROJ
+
+RUN dotnet publish $PROJ/ -c Release -o out
+
+# ===============
+# RUNTIME IMAGE
+# ===============
+FROM mcr.microsoft.com/dotnet/core/aspnet:3.1 AS runtime
+WORKDIR /app
+
 COPY --from=build /app/out .
 ENTRYPOINT ["dotnet", "DemoDownloader.dll"]
-
-# Enable Development Mode
-# ENV ASPNETCORE_ENVIRONMENT="Development"
