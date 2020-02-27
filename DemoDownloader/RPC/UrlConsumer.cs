@@ -69,6 +69,8 @@ namespace DemoDownloader.RPC
                 produceModel.Success = false;
             }
 
+            _logger.LogInformation($"Match {matchId}: Done");
+
             return produceModel;
         }
     }
