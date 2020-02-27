@@ -36,7 +36,16 @@ namespace DemoDownloader.RPC
         /// </summary>
         public override async Task<DownloadReport> HandleMessageAndReplyAsync(BasicDeliverEventArgs ea, DemoDownloadInstructions consumeModel)
         {
-            var matchId = long.Parse(ea.BasicProperties.CorrelationId);
+            long matchId;
+            try
+            {
+                matchId = long.Parse(ea.BasicProperties.CorrelationId);
+            }
+            catch
+            {
+                _logger.LogCritical($"Could not parse MatchId from CorrelationId: [ {ea.BasicProperties.CorrelationId} ]");
+                throw;
+            }
 
             _logger.LogInformation(
                 $"Match {matchId}: Received Download Url: [ {consumeModel.DownloadUrl} ]");
