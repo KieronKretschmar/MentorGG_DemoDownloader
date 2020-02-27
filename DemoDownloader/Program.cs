@@ -43,9 +43,9 @@ namespace DemoDownloader
         /// </summary>
         private static UrlConsumer UrlConsumerFactory(IServiceProvider sp, IConfiguration config)
         {
-            string AMQP_URI = GetEnvironmentVariable<string>(config, "AMQP_URI");
-            string AMQP_DOWNLOAD_URL_QUEUE = GetEnvironmentVariable<string>(config, "AMQP_DOWNLOAD_URL_QUEUE");
-            string AMQP_DEMO_URL_QUEUE = GetEnvironmentVariable<string>(config, "AMQP_DEMO_URL_QUEUE");
+            string AMQP_URI = GetRequiredEnvironmentVariable<string>(config, "AMQP_URI");
+            string AMQP_DOWNLOAD_URL_QUEUE = GetRequiredEnvironmentVariable<string>(config, "AMQP_DOWNLOAD_URL_QUEUE");
+            string AMQP_DEMO_URL_QUEUE = GetRequiredEnvironmentVariable<string>(config, "AMQP_DEMO_URL_QUEUE");
 
             var connections = new RPCQueueConnections(
                 AMQP_URI,
@@ -60,10 +60,11 @@ namespace DemoDownloader
         }
 
         /// <summary>
-        /// Attempt to retrieve an Environment Variable.
+        /// Attempt to retrieve an Environment Variable
+        /// Throws ArgumentNullException is not found.
         /// </summary>
         /// <typeparam name="T">Type to retreive</typeparam>
-        private static T GetEnvironmentVariable<T>(IConfiguration config, string key)
+        private static T GetRequiredEnvironmentVariable<T>(IConfiguration config, string key)
         {
             T value = config.GetValue<T>(key);
             if (value == null)
