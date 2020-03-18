@@ -10,10 +10,16 @@ using System.Threading.Tasks;
 using RabbitMQ.Client.Events;
 using RabbitCommunicationLib.TransferModels;
 using RabbitCommunicationLib.Enums;
+using Microsoft.Extensions.Hosting;
 
 namespace DemoDownloader.RPC
 {
-    public class UrlConsumer : RPCServer<DemoDownloadInstruction, DemoObtainReport>
+    public interface IUrlConsumer : IHostedService
+    {
+        Task<RPCServer<DemoDownloadInstruction, DemoObtainReport>.ConsumedMessageHandling<DemoObtainReport>> HandleMessageAndReplyAsync(BasicDeliverEventArgs ea, DemoDownloadInstruction consumeModel);
+    }
+
+    public class UrlConsumer : RPCServer<DemoDownloadInstruction, DemoObtainReport>, IUrlConsumer
     {
         private readonly ILogger<UrlConsumer> _logger;
         private readonly BlobStreamer _blobStreamer;
