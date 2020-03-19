@@ -28,7 +28,8 @@ namespace DemoDownloader.Retrieval
 
         public async Task<string> StreamToBlobAsync(string fileUrl)
         {
-            string blob_id = Guid.NewGuid().ToString();
+            var extension = Path.GetExtension(fileUrl);
+            string blob_id = $"{Guid.NewGuid()}{extension}";
             CloudBlockBlob blockBlob = _blobStorage.CloudBlobContainer.GetBlockBlobReference(blob_id);
 
             _logger.LogInformation($"Attempting download from [ {fileUrl} ]");

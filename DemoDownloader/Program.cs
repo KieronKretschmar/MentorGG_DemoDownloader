@@ -25,7 +25,7 @@ namespace DemoDownloader
                     services.AddSingleton<BlobStorage>();
 
                     // Add The Rabbit RPC Server
-                    services.AddSingleton(sp =>
+                    services.AddHostedService(sp =>
                         {
                             return UrlConsumerFactory(sp, hostContext.Configuration);
                         }
