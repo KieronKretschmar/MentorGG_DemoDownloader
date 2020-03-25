@@ -31,10 +31,12 @@ namespace DemoDownloader
                         }
                     );
 
-                    services.AddLogging(o =>
-                    {
-                        o.AddConsole();
-                        o.AddDebug();
+                    services.AddLogging(options =>
+                    { 
+                        options.AddConsole(o =>
+                        {
+                            o.TimestampFormat = "[yyyy-MM-dd HH:mm:ss zzz] ";
+                        });
                     });
                 });
 
