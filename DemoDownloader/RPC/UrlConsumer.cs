@@ -32,7 +32,8 @@ namespace DemoDownloader.RPC
         public UrlConsumer(
             ILogger<UrlConsumer> logger,
             BlobStreamer blobStreamer,
-            IRPCQueueConnections queueConnections) : base(queueConnections)
+            IRPCQueueConnections queueConnections,
+            ushort prefetchCount) : base(queueConnections, prefetchCount: prefetchCount)
         {
             _logger = logger;
             _blobStreamer = blobStreamer;

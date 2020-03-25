@@ -46,6 +46,7 @@ namespace DemoDownloader
             string AMQP_URI = GetRequiredEnvironmentVariable<string>(config, "AMQP_URI");
             string AMQP_DOWNLOAD_URL_QUEUE = GetRequiredEnvironmentVariable<string>(config, "AMQP_DOWNLOAD_URL_QUEUE");
             string AMQP_DEMO_URL_QUEUE = GetRequiredEnvironmentVariable<string>(config, "AMQP_DEMO_URL_QUEUE");
+            ushort AMQP_PREFETCH_COUNT = GetRequiredEnvironmentVariable<ushort>(config, "AMQP_PREFETCH_COUNT");
 
             var connections = new RPCQueueConnections(
                 AMQP_URI,
@@ -56,7 +57,8 @@ namespace DemoDownloader
             return new UrlConsumer(
                 logger: sp.GetRequiredService<ILogger<UrlConsumer>>(),
                 blobStreamer: sp.GetRequiredService<BlobStreamer>(),
-                queueConnections: connections);
+                queueConnections: connections,
+                prefetchCount: AMQP_PREFETCH_COUNT);
         }
 
         /// <summary>

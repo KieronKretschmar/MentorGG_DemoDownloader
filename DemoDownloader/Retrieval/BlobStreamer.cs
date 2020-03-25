@@ -43,7 +43,7 @@ namespace DemoDownloader.Retrieval
                 {
                     await blockBlob.UploadFromStreamAsync(source: stream);
                 }
-                _logger.LogInformation($"Retrieved and Uploaded [ {blob_id} ]");
+                _logger.LogInformation($"Retrieved Url [ {fileUrl} ] and Uploaded [ {blob_id} ]");
             }
             else
             {
