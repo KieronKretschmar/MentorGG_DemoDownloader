@@ -26,6 +26,7 @@ Download CS:GO Demos and store them on network file storage. (Azure Blob Storage
 - `AMQP_URI` : RabbitMQ Instance URI [\*]
 - `AMQP_DOWNLOAD_URL_QUEUE` : Queue to consume Download Urls from. [\*]
 - `AMQP_DEMO_URL_QUEUE` : Queue to publish Demo Urls to. [\*]
+- `AMQP_PREFETCH_COUNT` : Amount of messages to fetch before acknowledging the in-progress messages [\*]
 
 **Blob Storage**
 - `BLOB_CONTAINER_REF` : Azure Blob Storage container reference (Default: `demos` )
