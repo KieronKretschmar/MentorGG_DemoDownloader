@@ -9,6 +9,7 @@ using System.IO;
 using System.Net;
 using System.Net.Http;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 namespace DemoDownloader.Retrieval
@@ -28,7 +29,7 @@ namespace DemoDownloader.Retrieval
 
         public async Task<string> StreamToBlobAsync(string fileUrl)
         {
-            var extension = Path.GetExtension(fileUrl);
+            var extension = GetFullFileEnding(fileUrl);
             string blob_id = $"{Guid.NewGuid()}{extension}";
             CloudBlockBlob blockBlob = _blobStorage.CloudBlobContainer.GetBlockBlobReference(blob_id);
 
@@ -56,5 +57,14 @@ namespace DemoDownloader.Retrieval
         }
 
 
+        /// <summary>
+        /// Returns the full file ending of the filePath, including double endings like ".dem.gz".
+        /// </summary>
+        /// <param name="filePath"></param>
+        /// <returns></returns>
+        private string GetFullFileEnding(string filePath)
+        {
+            return Regex.Match(filePath, @"\..*").Value;
+        }
     }
 }
