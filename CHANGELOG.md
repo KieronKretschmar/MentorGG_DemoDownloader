@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## Upcoming
 
+## [1.0.1] 2020-04-08
+### Fixed
+- Change of previous release
+
 ## [1.0.0] 2020-04-08
 ### Changed
 - Change filenames to be stored with full extensions (mydemo.dem.bz instead of mydemo.bz)
