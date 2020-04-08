@@ -64,7 +64,8 @@ namespace DemoDownloader.Retrieval
         /// <returns></returns>
         private string GetFullFileEnding(string filePath)
         {
-            return Regex.Match(filePath, @"\..*").Value;
+            var fileName = filePath.Substring(filePath.LastIndexOf('/') + 1);
+            return Regex.Match(fileName, @"\..*").Value;
         }
     }
 }
