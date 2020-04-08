@@ -5,7 +5,8 @@ VisualStudioVersion = 16.0.29509.3
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DemoDownloader", "DemoDownloader\DemoDownloader.csproj", "{57D88AC9-8F47-4611-B9F3-1B78CF66DE26}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RabbitTransfer", "RabbitCommunicationLib\RabbitCommunicationLib.csproj", "{C80CA458-0F2A-4853-8BB2-0B4E2AA9FA94}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RabbitCommunicationLib", "RabbitCommunicationLib\RabbitCommunicationLib.csproj", "{C80CA458-0F2A-4853-8BB2-0B4E2AA9FA94}"
+EndProject
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
